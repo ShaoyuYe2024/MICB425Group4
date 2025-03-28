@@ -34,99 +34,7 @@ library(tidyverse)   # Includes ggplot2, dplyr, readr, etc.
 library(pheatmap)
 
 # Load the data from the CSV file
-saanich_data <- read_csv("../Saanich_Data.csv")  # Change this to read_tsv() if needed
-```
-
-    ## Rows: 1605 Columns: 29
-    ## ── Column specification ────────────────────────────────────────────────────────
-    ## Delimiter: ","
-    ## dbl  (28): Longitude, Latitude, Cruise, Depth, WS_O2, PO4, SI, WS_NO3, Mean_...
-    ## date  (1): Date
-    ## 
-    ## ℹ Use `spec()` to retrieve the full column specification for this data.
-    ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-
-``` r
-# Display the first few rows of the dataset
-head(saanich_data)
-```
-
-    ## # A tibble: 6 × 29
-    ##   Longitude Latitude Cruise Date       Depth WS_O2   PO4    SI WS_NO3 Mean_NH4
-    ##       <dbl>    <dbl>  <dbl> <date>     <dbl> <dbl> <dbl> <dbl>  <dbl>    <dbl>
-    ## 1     -124.     48.6      1 2006-02-18 0.01     NA  2.42    NA   26.7       NA
-    ## 2     -124.     48.6      1 2006-02-18 0.025    NA  2.11    NA   23.2       NA
-    ## 3     -124.     48.6      1 2006-02-18 0.04     NA  2.14    NA   19.5       NA
-    ## 4     -124.     48.6      1 2006-02-18 0.055    NA  2.49    NA   22.6       NA
-    ## 5     -124.     48.6      1 2006-02-18 0.07     NA  2.24    NA   23.1       NA
-    ## 6     -124.     48.6      1 2006-02-18 0.08     NA  2.80    NA   23.1       NA
-    ## # ℹ 19 more variables: Std_NH4 <dbl>, Mean_NO2 <dbl>, Std_NO2 <dbl>,
-    ## #   WS_H2S <dbl>, Std_H2S <dbl>, Cells.ml <dbl>, Mean_N2 <dbl>, Std_n2 <dbl>,
-    ## #   Mean_O2 <dbl>, Std_o2 <dbl>, Mean_co2 <dbl>, Std_co2 <dbl>, Mean_N2O <dbl>,
-    ## #   Std_N2O <dbl>, Mean_CH4 <dbl>, Std_CH4 <dbl>, Temperature <dbl>,
-    ## #   Salinity <dbl>, Density <dbl>
-
-``` r
-# Histogram
-ggplot(saanich_data, aes(x = WS_O2)) +
-  geom_histogram(bins = 10, fill = "gray", colour = "black") +
-  labs(title = "Distribution of Oxygen Concentrations",
-       x = "O2 (uM)",
-       y = "Frequency") +
-  theme_minimal()
-```
-
-    ## Warning: Removed 356 rows containing non-finite outside the scale range
-    ## (`stat_bin()`).
-
-![](Analysis_Code_SY_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
-
-``` r
-# Scatterplot
-ggplot(saanich_data, aes(x = WS_O2, y = WS_NO3, color = Depth)) +
-  geom_point() +
-  labs(title = "Oxygen vs Nitrate Concentrations by Depth",
-       x = "O2 (uM)",
-       y = "NO3 (uM)") +
-  scale_color_gradient(low = "black", high = "lightgray", trans = "reverse") +  # Grayscale gradient
-  theme_minimal()
-```
-
-    ## Warning: Removed 487 rows containing missing values or values outside the scale range
-    ## (`geom_point()`).
-
-![](Analysis_Code_SY_files/figure-gfm/unnamed-chunk-1-2.png)<!-- -->
-
-``` r
-# Vertical plot
-# Select relevant columns
-saanich_data_wide <- saanich_data %>%
-  select(Cruise, Date, Depth, WS_O2, WS_NO3, WS_H2S)
-
-# Pivot data to a longer format for faceting
-saanich_data_longer <- saanich_data_wide %>%
-  pivot_longer(cols = starts_with("WS_"),
-               names_to = "Chemical",
-               values_to = "Concentration_uM")
-
-ggplot(saanich_data_longer, aes(y = Depth, x = Concentration_uM)) +
-  geom_point(aes(colour = Chemical, shape = Chemical)) +
-  scale_y_reverse() +
-  labs(title = "Electron Acceptor Concentrations Against Depth",
-       x = "Concentration (uM)") +
-  theme_minimal() +
-  facet_grid(. ~ Chemical, scales = "free_x")
-```
-
-    ## Warning: Removed 681 rows containing missing values or values outside the scale range
-    ## (`geom_point()`).
-
-![](Analysis_Code_SY_files/figure-gfm/unnamed-chunk-1-3.png)<!-- -->
-
-``` r
-## Saanich TreeSAPP DsrAB
-# Load the data from the CSV file
-alpha_data <- read_csv("../alpha_diversity/SI_TS_DsrAB_alpha_diversiy.csv")  # Change this to read_tsv() if needed
+alpha_data <- read_csv("../alpha_diversity/SI_TS_NorB_alpha_diversiy.csv")  
 ```
 
     ## Rows: 7 Columns: 6
@@ -139,6 +47,36 @@ alpha_data <- read_csv("../alpha_diversity/SI_TS_DsrAB_alpha_diversiy.csv")  # C
     ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
 
 ``` r
+beta_data <- read.csv("../beta_diversity/SI_TS_NorB_beta_diversity.csv")
+
+# Display the first few rows of the dataset
+head(alpha_data)
+```
+
+    ## # A tibble: 6 × 6
+    ##   placerun                   phylo_entropy quadratic unrooted_pd rooted_pd  bwpd
+    ##   <chr>                              <dbl>     <dbl>       <dbl>     <dbl> <dbl>
+    ## 1 SI072_100m_NorB_complete_…          3.81      1.84        25.2      26.3  4.56
+    ## 2 SI072_10m_NorB_complete_p…          2.66      1.25        16.1      18.4  2.91
+    ## 3 SI072_120m_NorB_complete_…          4.28      2.03        31.3      32.4  5.11
+    ## 4 SI072_135m_NorB_complete_…          4.54      2.20        29.0      30.1  5.72
+    ## 5 SI072_150m_NorB_complete_…          4.75      2.34        31.3      32.4  6.51
+    ## 6 SI072_165m_NorB_complete_…          4.78      2.45        26.2      27.3  7.34
+
+``` r
+head(beta_data)
+```
+
+    ##                           sample_1                         sample_2      Z_1
+    ## 1 SI072_100m_NorB_complete_profile  SI072_10m_NorB_complete_profile 2.027050
+    ## 2 SI072_100m_NorB_complete_profile SI072_120m_NorB_complete_profile 0.643971
+    ## 3 SI072_100m_NorB_complete_profile SI072_135m_NorB_complete_profile 1.038210
+    ## 4 SI072_100m_NorB_complete_profile SI072_150m_NorB_complete_profile 1.730160
+    ## 5 SI072_100m_NorB_complete_profile SI072_165m_NorB_complete_profile 2.386000
+    ## 6 SI072_100m_NorB_complete_profile SI072_200m_NorB_complete_profile 2.074650
+
+``` r
+## Saanich TreeSAPP NorB
 # Split the placerun column
 alpha_data <- alpha_data %>%
   separate(placerun, into = c("sample", "depth", "gene", "extra"), sep = "_", remove = FALSE) %>%
@@ -157,42 +95,13 @@ head(alpha_data)
     ## # A tibble: 6 × 9
     ##   placerun      sample depth gene  phylo_entropy quadratic unrooted_pd rooted_pd
     ##   <chr>         <chr>  <dbl> <chr>         <dbl>     <dbl>       <dbl>     <dbl>
-    ## 1 SI072_100m_D… SI072    100 DsrAB          3.09      1.66       13.4      14.5 
-    ## 2 SI072_10m_Ds… SI072     10 DsrAB          2.54      1.48        8.80      9.91
-    ## 3 SI072_120m_D… SI072    120 DsrAB          3.10      1.60       14.2      15.4 
-    ## 4 SI072_135m_D… SI072    135 DsrAB          3.20      1.66       14.9      16.0 
-    ## 5 SI072_150m_D… SI072    150 DsrAB          3.24      1.65       15.6      16.3 
-    ## 6 SI072_165m_D… SI072    165 DsrAB          3.26      1.69       13.9      14.6 
+    ## 1 SI072_100m_N… SI072    100 NorB           3.81      1.84        25.2      26.3
+    ## 2 SI072_10m_No… SI072     10 NorB           2.66      1.25        16.1      18.4
+    ## 3 SI072_120m_N… SI072    120 NorB           4.28      2.03        31.3      32.4
+    ## 4 SI072_135m_N… SI072    135 NorB           4.54      2.20        29.0      30.1
+    ## 5 SI072_150m_N… SI072    150 NorB           4.75      2.34        31.3      32.4
+    ## 6 SI072_165m_N… SI072    165 NorB           4.78      2.45        26.2      27.3
     ## # ℹ 1 more variable: bwpd <dbl>
-
-``` r
-# Load the data from the CSV file
-beta_data <- read_csv("../beta_diversity/SI_TS_DsrAB_beta_diversity.csv")  # Change this to read_tsv() if needed
-```
-
-    ## Rows: 21 Columns: 3
-    ## ── Column specification ────────────────────────────────────────────────────────
-    ## Delimiter: ","
-    ## chr (2): sample_1, sample_2
-    ## dbl (1): Z_1
-    ## 
-    ## ℹ Use `spec()` to retrieve the full column specification for this data.
-    ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-
-``` r
-# Display the first few rows of the dataset
-head(beta_data)
-```
-
-    ## # A tibble: 6 × 3
-    ##   sample_1                          sample_2                            Z_1
-    ##   <chr>                             <chr>                             <dbl>
-    ## 1 SI072_100m_DsrAB_complete_profile SI072_10m_DsrAB_complete_profile  0.887
-    ## 2 SI072_100m_DsrAB_complete_profile SI072_120m_DsrAB_complete_profile 0.409
-    ## 3 SI072_100m_DsrAB_complete_profile SI072_135m_DsrAB_complete_profile 0.384
-    ## 4 SI072_100m_DsrAB_complete_profile SI072_150m_DsrAB_complete_profile 0.835
-    ## 5 SI072_100m_DsrAB_complete_profile SI072_165m_DsrAB_complete_profile 0.989
-    ## 6 SI072_100m_DsrAB_complete_profile SI072_200m_DsrAB_complete_profile 1.25
 
 # Alpha Diversity
 
@@ -235,8 +144,8 @@ KR distance. But first the data needs some cleaning.
 # Split 'sample_1' and 'sample_2' into their components (optional but useful for clarity)
 beta_data <- beta_data %>%
   mutate(
-    sample_1 = gsub("_DsrAB_complete_profile", "", sample_1),
-    sample_2 = gsub("_DsrAB_complete_profile", "", sample_2)
+    sample_1 = gsub("_NorB_complete_profile", "", sample_1),
+    sample_2 = gsub("_NorB_complete_profile", "", sample_2)
   ) %>%
   mutate(
     sample_1 = gsub("SI072_", "", sample_1),
@@ -277,14 +186,14 @@ beta_matrix_clean <- as.data.frame(beta_matrix_complete)
 print(beta_matrix_clean)
 ```
 
-    ##           10      100      120      135      150      165      200
-    ## 10  0.000000 0.887415 0.823000 0.859674 1.134750 1.379350 1.257030
-    ## 100 0.887415 0.000000 0.408684 0.383812 0.835392 0.989408 1.245400
-    ## 120 0.823000 0.408684 0.000000 0.377560 0.575683 0.789348 1.022770
-    ## 135 0.859674 0.383812 0.377560 0.000000 0.791192 0.931251 0.942531
-    ## 150 1.134750 0.835392 0.575683 0.791192 0.000000 0.572299 1.246880
-    ## 165 1.379350 0.989408 0.789348 0.931251 0.572299 0.000000 1.140560
-    ## 200 1.257030 1.245400 1.022770 0.942531 1.246880 1.140560 0.000000
+    ##          10      100      120      135      150      165      200
+    ## 10  0.00000 2.027050 2.308510 2.649310 3.159560 3.640060 3.415370
+    ## 100 2.02705 0.000000 0.643971 1.038210 1.730160 2.386000 2.074650
+    ## 120 2.30851 0.643971 0.000000 0.599217 1.278250 1.937730 1.593780
+    ## 135 2.64931 1.038210 0.599217 0.000000 0.874400 1.487100 1.171910
+    ## 150 3.15956 1.730160 1.278250 0.874400 0.000000 0.971246 0.764753
+    ## 165 3.64006 2.386000 1.937730 1.487100 0.971246 0.000000 0.687874
+    ## 200 3.41537 2.074650 1.593780 1.171910 0.764753 0.687874 0.000000
 
 Now the plotting:
 
@@ -344,7 +253,7 @@ class_data <- class_data %>%
   separate(Taxonomy, into = c("Root", "Domain", "Phylum", "Class", "Order", "Family", "Genus", "Species"), sep = ";", fill = "right") %>%
   select(-Root)  # Remove the 'Root' column
 sub_data <- class_data %>%
-  filter(Marker == "DsrAB")
+  filter(Marker == "NorB")
 sub_data %>% filter(is.na(as.numeric(Abundance)))
 ```
 
@@ -362,16 +271,16 @@ head(sub_data)
     ## # A tibble: 6 × 19
     ##   Sample Depth Query   Marker Start_pos End_pos Domain Phylum Class Order Family
     ##   <chr>  <dbl> <chr>   <chr>  <chr>     <chr>   <chr>  <chr>  <chr> <chr> <chr> 
-    ## 1 SI072     10 k147_3… DsrAB  5         251     " d__… " p__… " c_… " o_… " f__…
-    ## 2 SI072     10 k147_2… DsrAB  1         141     " d__… " p__… " c_… " o_… " f__…
-    ## 3 SI072     10 k147_3… DsrAB  2         96       <NA>   <NA>   <NA>  <NA>  <NA> 
-    ## 4 SI072     10 k147_4… DsrAB  505       768      <NA>   <NA>   <NA>  <NA>  <NA> 
-    ## 5 SI072     10 k147_3… DsrAB  1         256     " d__… " p__… " c_… " o_… " f__…
-    ## 6 SI072     10 k147_3… DsrAB  2         105      <NA>   <NA>   <NA>  <NA>  <NA> 
+    ## 1 SI072     10 k147_1… NorB   1         211     " d__… " p__… " c_… " o_… " f__…
+    ## 2 SI072     10 k147_4… NorB   1         218     " d__… " p__… " c_… " o_… " f__…
+    ## 3 SI072     10 k147_3… NorB   1         111     " d__… " p__… " c_… " o_… " f__…
+    ## 4 SI072     10 k147_4… NorB   1         222     " d__… " p__… " c_… " o_… " f__…
+    ## 5 SI072     10 k147_3… NorB   3         477     " d__… " p__… " c_… " o_… " f__…
+    ## 6 SI072     10 k147_1… NorB   1         44      " d__… " p__… " c_… " o_… " f__…
     ## # ℹ 8 more variables: Genus <chr>, Species <chr>, Abundance <chr>, iNode <chr>,
     ## #   `E-value` <chr>, LWR <chr>, EvoDist <chr>, Distances <chr>
 
-# Bubbleplot for DsrAB
+# Bubbleplot for NorB
 
 ``` r
 # Sum Abundance by Sample, Phylum, and Depth
@@ -386,7 +295,7 @@ ggplot(data_taxa, aes(x = Class, y = Depth)) +
   scale_y_reverse(limits = c(210, 0)) +  # Shallow at top, deep at bottom
   scale_size(range = c(1, 10)) +
   theme_minimal() +
-  labs(title = "Bubble Plot of Class Abundance by Depth for DsrAB",
+  labs(title = "Bubble Plot of Class Abundance by Depth for NorB",
        x = "Class",
        y = "Depth",
        size = "Abundance") +

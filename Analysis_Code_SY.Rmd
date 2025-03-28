@@ -16,52 +16,16 @@ library(tidyverse)   # Includes ggplot2, dplyr, readr, etc.
 library(pheatmap)
 
 # Load the data from the CSV file
-saanich_data <- read_csv("../Saanich_Data.csv")  # Change this to read_tsv() if needed
+alpha_data <- read_csv("../alpha_diversity/SI_TS_NorB_alpha_diversiy.csv")  
+beta_data <- read.csv("../beta_diversity/SI_TS_NorB_beta_diversity.csv")
 
 # Display the first few rows of the dataset
-head(saanich_data)
-
-# Histogram
-ggplot(saanich_data, aes(x = WS_O2)) +
-  geom_histogram(bins = 10, fill = "gray", colour = "black") +
-  labs(title = "Distribution of Oxygen Concentrations",
-       x = "O2 (uM)",
-       y = "Frequency") +
-  theme_minimal()
-
-# Scatterplot
-ggplot(saanich_data, aes(x = WS_O2, y = WS_NO3, color = Depth)) +
-  geom_point() +
-  labs(title = "Oxygen vs Nitrate Concentrations by Depth",
-       x = "O2 (uM)",
-       y = "NO3 (uM)") +
-  scale_color_gradient(low = "black", high = "lightgray", trans = "reverse") +  # Grayscale gradient
-  theme_minimal()
-
-# Vertical plot
-# Select relevant columns
-saanich_data_wide <- saanich_data %>%
-  select(Cruise, Date, Depth, WS_O2, WS_NO3, WS_H2S)
-
-# Pivot data to a longer format for faceting
-saanich_data_longer <- saanich_data_wide %>%
-  pivot_longer(cols = starts_with("WS_"),
-               names_to = "Chemical",
-               values_to = "Concentration_uM")
-
-ggplot(saanich_data_longer, aes(y = Depth, x = Concentration_uM)) +
-  geom_point(aes(colour = Chemical, shape = Chemical)) +
-  scale_y_reverse() +
-  labs(title = "Electron Acceptor Concentrations Against Depth",
-       x = "Concentration (uM)") +
-  theme_minimal() +
-  facet_grid(. ~ Chemical, scales = "free_x")
+head(alpha_data)
+head(beta_data)
 ```
 
 ```{r}
-## Saanich TreeSAPP DsrAB
-# Load the data from the CSV file
-alpha_data <- read_csv("../alpha_diversity/SI_TS_DsrAB_alpha_diversiy.csv")  # Change this to read_tsv() if needed
+## Saanich TreeSAPP NorB
 # Split the placerun column
 alpha_data <- alpha_data %>%
   separate(placerun, into = c("sample", "depth", "gene", "extra"), sep = "_", remove = FALSE) %>%
@@ -70,10 +34,6 @@ alpha_data <- alpha_data %>%
 # Display the first few rows of the dataset
 head(alpha_data)
 
-# Load the data from the CSV file
-beta_data <- read_csv("../beta_diversity/SI_TS_DsrAB_beta_diversity.csv")  # Change this to read_tsv() if needed
-# Display the first few rows of the dataset
-head(beta_data)
 ```
 
 # Alpha Diversity
@@ -111,8 +71,8 @@ Now we can look at samples compared to eachother using KR distance. But first th
 # Split 'sample_1' and 'sample_2' into their components (optional but useful for clarity)
 beta_data <- beta_data %>%
   mutate(
-    sample_1 = gsub("_DsrAB_complete_profile", "", sample_1),
-    sample_2 = gsub("_DsrAB_complete_profile", "", sample_2)
+    sample_1 = gsub("_NorB_complete_profile", "", sample_1),
+    sample_2 = gsub("_NorB_complete_profile", "", sample_2)
   ) %>%
   mutate(
     sample_1 = gsub("SI072_", "", sample_1),
@@ -200,14 +160,14 @@ class_data <- class_data %>%
   separate(Taxonomy, into = c("Root", "Domain", "Phylum", "Class", "Order", "Family", "Genus", "Species"), sep = ";", fill = "right") %>%
   select(-Root)  # Remove the 'Root' column
 sub_data <- class_data %>%
-  filter(Marker == "DsrAB")
+  filter(Marker == "NorB")
 sub_data %>% filter(is.na(as.numeric(Abundance)))
 
 # Display the first few rows of the dataset
 head(sub_data)
 
 ```
-# Bubbleplot for DsrAB
+# Bubbleplot for NorB
 ```{r}
 # Sum Abundance by Sample, Phylum, and Depth
 data_taxa <- sub_data %>%
@@ -221,7 +181,7 @@ ggplot(data_taxa, aes(x = Class, y = Depth)) +
   scale_y_reverse(limits = c(210, 0)) +  # Shallow at top, deep at bottom
   scale_size(range = c(1, 10)) +
   theme_minimal() +
-  labs(title = "Bubble Plot of Class Abundance by Depth for DsrAB",
+  labs(title = "Bubble Plot of Class Abundance by Depth for NorB",
        x = "Class",
        y = "Depth",
        size = "Abundance") +
