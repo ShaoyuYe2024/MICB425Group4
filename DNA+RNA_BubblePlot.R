@@ -2,7 +2,9 @@ library(tidyverse)
 library(dplyr)
 
 
-#CLASS
+# resolved to CLASS
+
+## DNA
 # load all DNA classifications from the different depths
 ten <- read.delim("classifications10.tsv", sep = '\t', header = TRUE) 
 onehundred <- read.delim("classifications100.tsv", sep = '\t', header = TRUE)
@@ -53,7 +55,7 @@ sum(is.na(NorB_data$Genus))
 sum(is.na(NorB_data$Species))
 
 
-#Metatranscriptomics
+#Metatranscriptomics/RNA
 
 # load all DNA classifications from the different depths
 tenRNA <- read.delim("classifications10RNA.tsv", sep = '\t', header = TRUE) 
