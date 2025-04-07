@@ -2,10 +2,8 @@ library(tidyverse)
 library(dplyr)
 
 
-# resolved to CLASS
-
-## DNA
-# load all DNA classifications from the different depths
+### Metagenome - DNA ###
+ # load all DNA classifications from the different depths
 ten <- read.delim("classifications10.tsv", sep = '\t', header = TRUE) 
 onehundred <- read.delim("classifications100.tsv", sep = '\t', header = TRUE)
 onetwenty <- read.delim("classifications120.tsv", sep = '\t', header = TRUE)
@@ -28,7 +26,8 @@ merged_data <- merged_data %>%
 NorB_data <- merged_data %>%
   filter(Marker == "NorB")
 
-# Sum Abundance by Sample, Phylum, and Depth
+## Class ##
+# Sum Abundance by Sample, Class, and Depth
 data_taxa <- NorB_data %>%
   group_by(Sample, Class, Depth) %>%
   summarise(Abundance = sum(Abundance, na.rm = TRUE), .groups = "drop") %>%
@@ -41,21 +40,41 @@ ggplot(data_taxa, aes(x = Class, y = Depth)) +
   scale_color_gradient(low = "red", high = "blue") +  # Gradient from red (low) to blue (high)
   scale_size(range = c(1, 10)) +
   theme_light() +
-  labs(title = "Bubble Plot of Abundance by Depth for NorB in Saanich Inlet",
+  labs(title = "DNA Abundance by Depth for NorB in Saanich Inlet Resolved to Class",
        x = "Class",
        y = "Depth",
        size = "Abundance") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 # save plot
-ggsave("NorB_BubblePlot.jpg")
-
-sum(is.na(NorB_data$Class))
-sum(is.na(NorB_data$Genus))
-sum(is.na(NorB_data$Species))
+ggsave("NorB_BubblePlot_Class.jpg")
 
 
-#Metatranscriptomics/RNA
+## Order ##
+# Sum Abundance by Sample, Order, and Depth
+data_taxa_order <- NorB_data %>%
+  group_by(Sample, Order, Depth) %>%
+  summarise(Abundance = sum(Abundance, na.rm = TRUE), .groups = "drop") %>%
+  mutate(Order = gsub("o__", "", Order))
+
+# Make Bubble Plot
+ggplot(data_taxa_order, aes(x = Order, y = Depth)) +
+  geom_point(aes(size = Abundance, color = Abundance), alpha = 0.7) +  # Map color to Abundance
+  scale_y_reverse(limits = c(210, 0)) +  # Shallow at top, deep at bottom
+  scale_color_gradient(low = "red", high = "blue") +  # Gradient from red (low) to blue (high)
+  scale_size(range = c(1, 10)) +
+  theme_light() +
+  labs(title = "DNA Abundance by Depth for NorB in Saanich Inlet Resolved to Order",
+       x = "Order",
+       y = "Depth",
+       size = "Abundance") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# save plot
+ggsave("NorB_BubblePlot_Order.jpg")
+
+
+### Metatranscriptomics - RNA ###
 
 # load all DNA classifications from the different depths
 tenRNA <- read.delim("classifications10RNA.tsv", sep = '\t', header = TRUE) 
@@ -81,7 +100,10 @@ merged_dataRNA <- merged_dataRNA %>%
 NorB_RNAdata <- merged_dataRNA %>%
   filter(Marker == "NorB")
 
-# Sum Abundance by Sample, Phylum, and Depth
+
+## Class ##
+
+# Sum Abundance by Sample, Class, and Depth
 RNAdata_taxa <- NorB_RNAdata %>%
   group_by(Sample, Class, Depth) %>%
   summarise(Abundance = sum(Abundance, na.rm = TRUE), .groups = "drop") %>%
@@ -94,13 +116,61 @@ ggplot(RNAdata_taxa, aes(x = Class, y = Depth)) +
   scale_color_gradient(low = "red", high = "blue") +  # Gradient from red (low) to blue (high)
   scale_size(range = c(1, 10)) +
   theme_light() +
-  labs(title = "Bubble Plot of Class RNA Abundance by Depth for NorB",
+  labs(title = "RNA Abundance by Depth for NorB Resolved to Class",
        x = "Class",
        y = "Depth",
        size = "RNA Abundance",
        color = "RNA Abundance") +  # Label for color legend
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
-ggsave("NorB_BubblePlotRNA.jpg")
+ggsave("NorB_BubblePlotRNA_Class.jpg")
 
+
+
+## Order ##
+# Sum Abundance by Sample, Order, and Depth
+RNAdata_taxa_order <- NorB_RNAdata %>%
+  group_by(Sample, Order, Depth) %>%
+  summarise(Abundance = sum(Abundance, na.rm = TRUE), .groups = "drop") %>%
+  mutate(Order = gsub("o__", "", Order))
+
+# Make Bubble Plot
+ggplot(RNAdata_taxa_order, aes(x = Order, y = Depth)) +
+  geom_point(aes(size = Abundance, color = Abundance), alpha = 0.7) +  # Map color to Abundance
+  scale_y_reverse(limits = c(210, 0)) +  # Shallow at top, deep at bottom
+  scale_color_gradient(low = "red", high = "blue") +  # Gradient from red (low) to blue (high)
+  scale_size(range = c(1, 10)) +
+  theme_light() +
+  labs(title = "RNA Abundance by Depth for NorB Resolved to Order",
+       x = "Order",
+       y = "Depth",
+       size = "RNA Abundance",
+       color = "RNA Abundance") +  # Label for color legend
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+ggsave("NorB_BubblePlotRNA_Order.jpg")
+
+
+## GENUS ##
+# Sum Abundance by Sample, Phylum, and Depth
+RNAdata_taxa_genus <- NorB_RNAdata %>%
+  group_by(Sample, Genus, Depth) %>%
+  summarise(Abundance = sum(Abundance, na.rm = TRUE), .groups = "drop") %>%
+  mutate(Genus = gsub("g__", "", Genus))
+
+# Make Bubble Plot
+ggplot(RNAdata_taxa_genus, aes(x = Genus, y = Depth)) +
+  geom_point(aes(size = Abundance, color = Abundance), alpha = 0.7) +  # Map color to Abundance
+  scale_y_reverse(limits = c(210, 0)) +  # Shallow at top, deep at bottom
+  scale_color_gradient(low = "red", high = "blue") +  # Gradient from red (low) to blue (high)
+  scale_size(range = c(1, 10)) +
+  theme_light() +
+  labs(title = "RNA Abundance by Depth for NorB Resolved to Genus",
+       x = "Genus",
+       y = "Depth",
+       size = "RNA Abundance",
+       color = "RNA Abundance") +  # Label for color legend
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+ggsave("NorB_BubblePlotRNA_Genus.jpg")
 
